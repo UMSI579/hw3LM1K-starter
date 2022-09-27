@@ -2,7 +2,7 @@
 **SI669 Fall 2022**
 
 ## Video Walkthrough 
-See the [Demo Video](https://www.loom.com/share/ab569fb0124a44eaa2aee2c5a64645db).
+See the [Demo Video](https://youtube.com/shorts/HQBAaiBEwPw).
 
 ## Learning Goals
 * Gain practice supporting CRUD with (more) complex objects
