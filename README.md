@@ -38,7 +38,7 @@ See the [Demo Video](https://www.loom.com/share/ab569fb0124a44eaa2aee2c5a64645db
 
 ## Extra Credit
 
-Allow sorting by priority or todo text.
+Allow sorting by priority or todo text. See the [Demo Video](https://youtu.be/FAA1sFUeeAM). 
 
 ## Grading (up to 4 points)
 | No. | Requirement  | Points |
