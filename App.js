@@ -1,38 +1,35 @@
 import React, { useState } from 'react';
 import { Button, Overlay, Icon, Input } from '@rneui/themed';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, DynamicColorIOS } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
 function ListMaker1000Final () {
 
   // INITIAL VALUES FOR TESTING
   const initTodos = [
-    { text: 'Get milk', priority: 1, key: 1},
-    { text: 'Drop off dry cleaning', priority: 2, key: 2},
-    { text: 'Finish 669 homework', priority: 3, key: 3}
+    { text: 'Get milk', key: 1},
+    { text: 'Drop off dry cleaning', key: 2},
+    { text: 'Finish 669 homework', key: 3}
   ];
 
   // STATE VARIABLES AND THEIR UPDATERS
   const [todos, setTodos] = useState(initTodos);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [priority, setPriority] = useState(1);
   const [selectedItem, setSelectedItem] = useState('');
 
   // DATA MODEL FUNCTIONS (CRUD)
-  const createTodo = (todoText, todoPriority) => {
+  const createTodo = (todoText) => {
     let newTodo = {
       text: todoText,
-      priority: todoPriority,
       key: Date.now()
     }
-    let newTodos = todos.concat(newTodo);
-    setTodos(newTodos);
+    todos.push(newTodo);
+    setTodos(todos);
   }
 
-  const updateTodo = (todo, newText, newPriority) => { 
-    let newTodo = { ...todo, text: newText, priority: newPriority };
-    let newTodos = todos.map(item=> item.key===todo.key ? newTodo : item);
-    setTodos(newTodos);
+  const updateTodo = (todo, newText) => { 
+    todo.text = newText;
+    setTodos(todos);
   }
 
   const deleteTodo = (todo) => {    
@@ -45,21 +42,10 @@ function ListMaker1000Final () {
   function TodoListItem({item}) {
     return (
       <View style={styles.listItemView}>
-        <TouchableOpacity 
-          style={styles.li1}
-          onPress={()=>{
-            setSelectedItem(item);
-            setInputText(item.text);
-            setPriority(item.priority);
-            setOverlayVisible(true);
-          }}  
-        >
+        <View style={styles.li1}>
           <Text style={styles.listItemText}>{item.text}</Text>
-          <Text style={{fontSize: 24, padding: 12}}>
-            {item.priority===1 ? '!' : (item.priority===2 ? '!!' : '!!!' )}
-          </Text>
-        </TouchableOpacity>
-        {/* <TouchableOpacity 
+        </View>
+        <TouchableOpacity 
           style={styles.li2}  
           onPress={()=>{
             setSelectedItem(item);
@@ -74,7 +60,7 @@ function ListMaker1000Final () {
             size={25}
             iconStyle={{ marginRight: 10 }}
           />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.li3}
           onPress={()=>{
@@ -127,32 +113,11 @@ function ListMaker1000Final () {
         onBackdropPress={()=>setOverlayVisible(false)}
         overlayStyle={styles.overlayView}
       >
-        <View style={styles.olInput}>
-          <View style={styles.olText}>
-            <Input
-              placeholder='New Todo Item'
-              value={inputText}
-              onChangeText={(newText)=>setInputText(newText)}
-            />
-          </View>
-          <View style={styles.olButtons}>
-            <TouchableOpacity style={styles.priorityButton} onPress={()=>setPriority(1)}>
-              <Text style={[
-                priority===1 ? {color: colors.dark} : {color: colors.light}
-              ]}>!</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.priorityButton} onPress={()=>setPriority(2)}>
-              <Text style={[
-                priority===2 ? {color: colors.dark} : {color: colors.light}
-              ]}>!!</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.priorityButton} onPress={()=>setPriority(3)}>
-              <Text style={[
-                priority===3 ? {color: colors.dark} : {color: colors.light}
-              ]}>!!!</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Input
+          placeholder='New Todo Item'
+          value={inputText}
+          onChangeText={(newText)=>setInputText(newText)}
+        />
         <View style={{flexDirection: 'row', justifyContent: 'space-around', width:'80%'}}>
           <Button
             title="Cancel"
@@ -166,12 +131,11 @@ function ListMaker1000Final () {
             title={selectedItem ? "Update Todo" : "Add Todo"}
             onPress={()=>{
               if (selectedItem) {
-                updateTodo(selectedItem, inputText, priority);
+                updateTodo(selectedItem, inputText);
               } else {
-                createTodo(inputText, priority);
+                createTodo(inputText);
               }
               setSelectedItem(undefined);
-              setPriority(1);
               setInputText('');
               setOverlayVisible(false);
             }}
@@ -181,11 +145,6 @@ function ListMaker1000Final () {
     </View>
   );
 };
-
-const colors = {
-  light: '#AAAACC',
-  dark: '#444477'
-}
 
 const styles = StyleSheet.create({
   screen: {
@@ -198,11 +157,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: '20%',
     paddingBottom: '5%',
-    backgroundColor: colors.light
+    backgroundColor: '#AAAACC'
   },
   headerText: {
     fontSize: 44,
-    color: colors.dark
+    color: '#444477'
   },
   body: {
     flex: 0.5,
@@ -219,9 +178,6 @@ const styles = StyleSheet.create({
   },
   li1: {
     flex: 0.8, 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingRight: '3%'
   },
   li2: {
@@ -246,28 +202,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '80%'
-  },
-  olInput: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  olText: {
-    flex: 0.7,
-    flexDirection: 'row'
-  },  
-  olButtons: {
-    flex: 0.3, 
-    flexDirection: 'row'
-  },
-  priorityButton: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: colors.light
-  },
-  priorityButtonSelected: {
-    color: colors.dark
   }
 });
 
