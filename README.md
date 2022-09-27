@@ -43,7 +43,8 @@ Allow sorting by priority or todo text.
 ## Grading (up to 4 points)
 | No. | Requirement  | Points |
 | --- | ------------- | ------------- |
-| 1 | Correctly displays whether "Enter Password:" text field consists only of letters or numbers | 1.5 |
-| 2 | Correctly displays whether "Enter Password:" text field has at least one number and at least one upper case letter | 1.5 |
-| 3 | Correctly displays whether "Enter Password:" and "Re-enter Password:" text fields match | 1  |
+| 1 | List is sorted alphabetically when alpha sort is pressed, and toggles between ascending and descending when subsequently pressed | 1 |
+| 2 | List is sorted by priority when priority sort is pressed, and toggles between ascending and descending when subsequently pressed | 1 |
+| 3 | New todos are inserted into the list correctly, based on the current sort settings | 1 |
+| 4 | Updated todos are inserted into the list correctly, based on the current sort settings | 1  |
 |   | **Total** | **4**
