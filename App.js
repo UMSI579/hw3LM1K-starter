@@ -23,13 +23,13 @@ function ListMaker1000Final () {
       text: todoText,
       key: Date.now()
     }
-    todos.push(newTodo);
-    setTodos(todos);
+      setTodos(todos.concat(newTodo));
   }
 
   const updateTodo = (todo, newText) => { 
-    todo.text = newText;
-    setTodos(todos);
+    let newTodo = {...todo, text: newText};
+    let newTodos = todos.map(elem=>elem.key===todo.key?newTodo:elem);
+    setTodos(newTodos);
   }
 
   const deleteTodo = (todo) => {    
