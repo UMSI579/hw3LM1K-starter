@@ -1,38 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Overlay, Icon, Input } from '@rneui/themed';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, query,
+  doc, getDocs, updateDoc, addDoc, deleteDoc
+} from "firebase/firestore";
+import { firebaseConfig } from './Secrets';
+
+console.log(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 function ListMaker1000Final () {
 
-  // INITIAL VALUES FOR TESTING
-  const initTodos = [
-    { text: 'Get milk', key: 1},
-    { text: 'Drop off dry cleaning', key: 2},
-    { text: 'Finish 669 homework', key: 3}
-  ];
-
   // STATE VARIABLES AND THEIR UPDATERS
-  const [todos, setTodos] = useState(initTodos);
+  const [todos, setTodos] = useState([]);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [inputText, setInputText] = useState('');
   const [selectedItem, setSelectedItem] = useState('');
 
-  // DATA MODEL FUNCTIONS (CRUD)
-  const createTodo = (todoText) => {
-    let newTodo = {
-      text: todoText,
-      key: Date.now()
-    }
-      setTodos(todos.concat(newTodo));
+  async function loadInitList() {
+    const initList = [];
+    const collRef = collection(db, 'todos');
+    const q = query(collRef);
+    const querySnapshot = await getDocs(q);
+    querySnapshot.docs.forEach((docSnapshot)=>{
+      let todo = docSnapshot.data();
+      console.log(todo);
+      todo.key = docSnapshot.id;
+      initList.push(todo);
+    });
+    setTodos(initList);
   }
 
-  const updateTodo = (todo, newText) => { 
+  useEffect(()=>{
+    loadInitList();
+  }, []);
+
+  // DATA MODEL FUNCTIONS (CRUD)
+  const createTodo = async (todoText) => {
+    let newTodo = {
+      text: todoText,
+    }
+    let todoCollRef = collection(db, 'todos');
+    let todoSnap = await addDoc(todoCollRef, newTodo);
+    newTodo.key = todoSnap.id;
+    setTodos(todos.concat(newTodo));
+  }
+
+  const updateTodo = async (todo, newText) => {
+    let docToUpdate = doc(db, 'todos', todo.key);
+    await updateDoc(docToUpdate, {
+      text: newText
+    });
+
     let newTodo = {...todo, text: newText};
-    let newTodos = todos.map(elem=>elem.key===todo.key?newTodo:elem);
+    let newTodos = todos.map(elem=>elem.key===todo.key?newTodo: elem);
     setTodos(newTodos);
   }
 
-  const deleteTodo = (todo) => {    
+  const deleteTodo = async (todo) => {
+    let docToDelete = doc(db, 'todos', todo.key);
+    await deleteDoc(docToDelete);
+
     let newTodos = todos.filter((item)=>item.key != todo.key);
     setTodos(newTodos);
   }
@@ -45,15 +75,15 @@ function ListMaker1000Final () {
         <View style={styles.li1}>
           <Text style={styles.listItemText}>{item.text}</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.li2}  
+        <TouchableOpacity
+          style={styles.li2}
           onPress={()=>{
             setSelectedItem(item);
             setInputText(item.text);
             setOverlayVisible(true);
-          }}  
+          }}
         >
-          <Icon 
+          <Icon
             name="edit"
             type="font-awesome"
             color="black"
@@ -61,13 +91,13 @@ function ListMaker1000Final () {
             iconStyle={{ marginRight: 10 }}
           />
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.li3}
           onPress={()=>{
             deleteTodo(item);
-          }}  
+          }}
         >
-          <Icon 
+          <Icon
             name="trash"
             type="font-awesome"
             color="black"
@@ -98,8 +128,8 @@ function ListMaker1000Final () {
         />
       </View>
       <View style={styles.footer}>
-        <Button 
-          size='lg' 
+        <Button
+          size='lg'
           color='#AAAACC'
           onPress={()=>{setOverlayVisible(true)}}
         >
@@ -108,8 +138,8 @@ function ListMaker1000Final () {
       </View>
 
       {/* OVERLAY COMPONENT: SHOWN ON TOP WHEN visible==true */}
-      <Overlay 
-        isVisible={overlayVisible} 
+      <Overlay
+        isVisible={overlayVisible}
         onBackdropPress={()=>setOverlayVisible(false)}
         overlayStyle={styles.overlayView}
       >
@@ -125,7 +155,7 @@ function ListMaker1000Final () {
               setSelectedItem(undefined);
               setInputText('');
               setOverlayVisible(false)
-            }}  
+            }}
           />
           <Button
             title={selectedItem ? "Update Todo" : "Add Todo"}
@@ -177,7 +207,7 @@ const styles = StyleSheet.create({
     padding: '1%',
   },
   li1: {
-    flex: 0.8, 
+    flex: 0.8,
     paddingRight: '3%'
   },
   li2: {
@@ -205,8 +235,4 @@ const styles = StyleSheet.create({
   }
 });
 
-//export default ListMaker1000Start;
-// export default ListMaker1000Create;
-// export default ListMaker1000Delete;
 export default ListMaker1000Final;
-//export default ContextDemo;
